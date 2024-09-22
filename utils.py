@@ -1,5 +1,5 @@
 import csv
-
+from prettytable import PrettyTable
 
 def id_auto_increment(csv_file):
     with open(csv_file, 'rt', encoding='utf-8', newline='') as file:
@@ -13,15 +13,21 @@ def id_auto_increment(csv_file):
             id = int(last_id) + 1
             return id
 
-# id, date, description, amount, category
-# def print_pattern(columns, rows):
-#     table = PrettyTable()
-#     table.field_names = columns
 
-#     row_list = []
-#     for row in rows:
-#         row_list.append(row)
+def print_pattern(columns, rows):
+    table = PrettyTable()
+    table.field_names = columns
+    for row in rows:
+        table.add_row([row[columns[i]] for i in range(len(columns))])
+    print(table)
 
-#     table.add_row(row_list)
-#     print(table)
 
+def summary(amount_list, month=None):
+    total = 0
+    for amount in amount_list:
+        amount = int(amount)
+        total += amount
+    if month:
+        print(f'Total expenses for {month} month - {total}')
+    else:
+        print(f'Total expenses - {total}')

@@ -1,5 +1,6 @@
 import argparse
-from CRUD import (create_file, create)
+from CRUD import (create_file, create,
+                  read)
 
 
 def main():
@@ -15,8 +16,11 @@ def main():
     parser_add.add_argument('--amount', type=int, help='Amount')
     parser_add.add_argument('--category', type=str, help='Category')
 
-    subparsers.add_parses('list', help='Expenses list')
+    subparsers.add_parser('list', help='Expenses list')
     
+    parser_summary = subparsers.add_parser('summary', help='Summary')
+    parser_summary.add_argument('--month', type=int, help='Monthly summary',
+                                nargs='?', choices=[i for i in range(1, 13)])
 
     args = parser.parse_args()
 
@@ -37,7 +41,12 @@ def main():
                amount=amount,
                category=category)
     elif args.command == 'list':
-        pass
+        read()
+    elif args.command == 'summary':
+        if not args.month:
+            read(0)
+        else:
+            read(args.month)
     else:
         print('Wrong command.')
 
