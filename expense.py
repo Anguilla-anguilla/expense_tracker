@@ -1,6 +1,6 @@
 import argparse
 from CRUD import (create_file, create,
-                  read)
+                  read, update)
 
 
 def main():
@@ -17,10 +17,18 @@ def main():
     parser_add.add_argument('--category', type=str, help='Category')
 
     subparsers.add_parser('list', help='Expenses list')
-    
+
     parser_summary = subparsers.add_parser('summary', help='Summary')
     parser_summary.add_argument('--month', type=int, help='Monthly summary',
                                 nargs='?', choices=[i for i in range(1, 13)])
+    
+    parser_update = subparsers.add_parser('update', help='Update')
+    parser_update.add_argument('id', type=str, help='Expense ID')
+    parser_update.add_argument('--date', type=str, help='Update date')
+    parser_update.add_argument('--description', type=str,
+                                help='Update description')
+    parser_update.add_argument('--amount', type=int, help='Update amount')
+    parser_update.add_argument('--category', type=str, help='Update category')
 
     args = parser.parse_args()
 
@@ -47,8 +55,31 @@ def main():
             read(0)
         else:
             read(args.month)
+    elif args.command == 'update':
+        if args.description:
+            update_description = args.description
+        else:
+            update_description = None
+        if args.date:
+            update_date = args.date
+        else:
+            update_date = None
+        if args.amount:
+            update_amount = args.amount
+        else:
+            update_amount = None
+        if args.category:
+            update_category = args.category
+        else:
+            update_category = None
+        update(id=args.id,
+               description=update_description,
+               date=update_date,
+               amount=update_amount,
+               category=update_category)
     else:
         print('Wrong command.')
+
 
 if __name__ == '__main__':
     main()

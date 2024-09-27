@@ -22,12 +22,12 @@ def print_pattern(columns, rows):
     print(table)
 
 
-def summary(amount_list, month=None):
+def summary(amount_list, month=None, year=None):
     total = 0
     for amount in amount_list:
         amount = int(amount)
         total += amount
     if month:
-        print(f'Total expenses for {month} month - {total}')
+        print(f'Total expenses for {month}.{int(year)-2000} - {total}')
     else:
         print(f'Total expenses - {total}')
