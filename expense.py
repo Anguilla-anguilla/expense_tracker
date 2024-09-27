@@ -1,6 +1,7 @@
 import argparse
 from CRUD import (create_file, create,
-                  read, update, delete)
+                  read, update, delete,
+                  summary, filter_by_category)
 
 
 def main():
@@ -33,6 +34,9 @@ def main():
     parser_delete = subparsers.add_parser('delete', help='Delete')
     parser_delete.add_argument('id', type=str, help='Expense ID')
 
+    parser_filter = subparsers.add_parser('filter', help='Delete')
+    parser_filter.add_argument('--category', type=str, help='Expense ID')
+
     args = parser.parse_args()
 
     if args.command == 'add':
@@ -55,9 +59,14 @@ def main():
         read()
     elif args.command == 'summary':
         if not args.month:
-            read(0)
+            summary(0)
         else:
-            read(args.month)
+            summary(args.month)
+    elif args.command == 'filter':
+        if not args.category:
+            filter_by_category()
+        else:
+            filter_by_category(args.category)
     elif args.command == 'update':
         if args.description:
             update_description = args.description
@@ -81,7 +90,7 @@ def main():
                amount=update_amount,
                category=update_category)
     elif args.command == 'delete':
-        delete(args.id) 
+        delete(args.id)
     else:
         print('Wrong command.')
 
