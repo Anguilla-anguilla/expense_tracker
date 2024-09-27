@@ -62,8 +62,7 @@ def read(choice=None):
                 summary(amount_list=amount_list)
 
 
-def update(id, description=None, date=None, amount=None, category=None):
-    
+def update(id, description=None, date=None, amount=None, category=None): 
     with open(CSV_FILE, 'rt', encoding='utf-8', newline='') as file:
         csv_reader = csv.DictReader(file)
         data = list(csv_reader)
@@ -94,5 +93,23 @@ def update(id, description=None, date=None, amount=None, category=None):
         csv_writer.writerows(data)
 
 
-def delete():
-    pass
+def delete(id):
+    with open(CSV_FILE, 'rt', encoding='utf-8', newline='') as file:
+        csv_reader = csv.DictReader(file)
+        data = list(csv_reader)
+
+        delete_expense = next((item for item in data if item['ID'] == id),
+                              None)
+        
+        if delete_expense is None:
+            print('Wrong ID')
+            return
+        else:
+            print(f'ID {id}: Deleted.')
+            data.remove(delete_expense)
+
+    with open(CSV_FILE, mode='w', encoding='utf-8', newline='') as file:
+        csv_writer = csv.DictWriter(file, fieldnames=COLUMNS)
+        csv_writer.writeheader()
+        csv_writer.writerows(data)
+
