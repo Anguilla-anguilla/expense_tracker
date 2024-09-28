@@ -6,8 +6,10 @@ from utils import id_auto_increment, print_pattern, count_expense
 
 
 CSV_FILE = 'expense.csv'
+CSV_BUDGET = 'budget.csv'
 
-COLUMNS = ['ID', 'Date', 'Description', 'Amount', 'Category']
+COLUMNS = ['ID', 'Date', 'Description', 'Amount', 'Category', 'Limit']
+BUDGET_COLUMNS = ['Month', 'Budget']
 
 
 def create_file():
@@ -15,6 +17,12 @@ def create_file():
         with open(CSV_FILE, 'wt', encoding='utf-8') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(COLUMNS)
+
+    if not os.path.exists(CSV_BUDGET):
+        with open(CSV_BUDGET, 'wt', encoding='utf-8') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(BUDGET_COLUMNS)
+
 
 
 def create(description, amount, category):
@@ -41,27 +49,74 @@ def read():
         print_pattern(columns=COLUMNS, rows=csv_reader)
 
 
-def summary(choice):
+def summary(choice=None, limit=False):
     with open(CSV_FILE, 'rt', encoding='utf-8', newline='') as file:
         csv_reader = csv.DictReader(file)
 
         current_year = dt.datetime.now().strftime('%Y')
         amount_list = []
-        if choice != 0:
-            if choice < 10:
-                pattern = rf'\b\d{{2}}\.0{choice}\.{current_year}\b'
+
+        if choice is not None:
+            if choice != 0:
+                if choice < 10:
+                    pattern = rf'\b\d{{2}}\.0{choice}\.{current_year}\b'
+                else:
+                    pattern = rf'\b\d{{2}}\.{choice}\.{current_year}\b'
+                for row in csv_reader:
+                    if re.match(pattern, row['Date']):
+                        amount_list.append(row['Amount'])
+                if limit is True:
+                    total = count_expense(amount_list=amount_list,
+                                            month=choice,
+                                            year=current_year,
+                                            limit=True)
+                    return total
+                else:
+                    count_expense(amount_list=amount_list,
+                                  month=choice,
+                                  year=current_year)
+
             else:
-                pattern = rf'\b\d{{2}}\.{choice}\.{current_year}\b'
-            for row in csv_reader:
-                if re.match(pattern, row['Date']):
+                for row in csv_reader:
                     amount_list.append(row['Amount'])
-            count_expense(amount_list=amount_list,
-                         month=choice,
-                         year=current_year)
-        else:
-            for row in csv_reader:
-                amount_list.append(row['Amount'])
-            count_expense(amount_list=amount_list)
+                count_expense(amount_list=amount_list)
+
+
+def monthly_limit(limit=None, show=False):
+    with open(CSV_BUDGET, 'rt', encoding='utf-8', newline='') as file:
+        csv_reader = csv.DictReader(file)
+        data = list(csv_reader)
+
+        current_month = dt.datetime.now().strftime('%m')
+        current_year = dt.datetime.now().strftime('%Y')
+
+        budget_date = f'{current_month}.{current_year}'
+        limitation = next((item for item in data if item['Month'] == budget_date),
+                            None)
+
+        if limit is not None:
+            if limitation is None:
+                limitation = {'Month': budget_date, 
+                                'Budget': limit}
+                data.append(limitation)
+            else:
+                limitation['Budget'] = limit
+
+            print(f'Budget limit for {current_month} month is {limit}.')
+
+            with open(CSV_BUDGET, mode='w', encoding='utf-8', newline='') as file:
+                csv_writer = csv.DictWriter(file, fieldnames=BUDGET_COLUMNS)
+                csv_writer.writeheader()
+                csv_writer.writerows(data)
+
+        if show is True:
+            total = summary(choice=int(current_month), limit=True)
+            difference = int(limitation['Budget']) - total
+            if difference > 0:
+                print(f'Yet {difference} to spend.')
+            else:
+                print('Warning!')
+                print(f'Exceeded limit by {abs(difference)}.')
 
 
 def filter_by_category(filter=None):

@@ -22,12 +22,16 @@ def print_pattern(columns, rows):
     print(table)
 
 
-def count_expense(amount_list, month=None, year=None):
+def count_expense(amount_list, month=None, year=None, limit=False):
     total = 0
     for amount in amount_list:
         amount = int(amount)
         total += amount
     if month:
-        print(f'Total expenses for {month}/{int(year)-2000} - {total}')
+        if limit is True:
+            return total
+        else:
+            print(f'Total expenses for {month}/{int(year)-2000} - {total}')
     else:
         print(f'Total expenses - {total}')
+

@@ -1,7 +1,8 @@
 import argparse
 from CRUD import (create_file, create,
                   read, update, delete,
-                  summary, filter_by_category)
+                  summary, filter_by_category,
+                  monthly_limit)
 
 
 def main():
@@ -23,6 +24,13 @@ def main():
     parser_summary.add_argument('--month', type=int, help='Monthly summary',
                                 nargs='?', choices=[i for i in range(1, 13)])
     
+    parser_limit = subparsers.add_parser('limit', help='Limit')
+    parser_limit.add_argument('--set', type=int, help='Set limit')
+    parser_limit.add_argument('--show', nargs='?', const=True, help='Show limit')
+
+    parser_filter = subparsers.add_parser('filter', help='Delete')
+    parser_filter.add_argument('--category', type=str, help='Expense ID')
+    
     parser_update = subparsers.add_parser('update', help='Update')
     parser_update.add_argument('id', type=str, help='Expense ID')
     parser_update.add_argument('--date', type=str, help='Update date')
@@ -33,9 +41,6 @@ def main():
 
     parser_delete = subparsers.add_parser('delete', help='Delete')
     parser_delete.add_argument('id', type=str, help='Expense ID')
-
-    parser_filter = subparsers.add_parser('filter', help='Delete')
-    parser_filter.add_argument('--category', type=str, help='Expense ID')
 
     args = parser.parse_args()
 
@@ -62,6 +67,11 @@ def main():
             summary(0)
         else:
             summary(args.month)
+    elif args.command == 'limit':
+        if args.set:
+            monthly_limit(args.set)
+        if args.show:
+            monthly_limit(show=True) 
     elif args.command == 'filter':
         if not args.category:
             filter_by_category()
