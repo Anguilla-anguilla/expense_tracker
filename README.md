@@ -9,6 +9,7 @@ To install the CLI Expense Tracker, follow these steps:
 1. Clone the Repository:
 
 ```git clone https://github.com/Anguilla-anguilla/expense_tracker.git```
+
 ```cd expense_tracker```
 
 2. Install Dependencies:
