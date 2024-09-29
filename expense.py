@@ -28,8 +28,8 @@ def main():
     parser_limit.add_argument('--set', type=int, help='Set limit')
     parser_limit.add_argument('--show', nargs='?', const=True, help='Show limit')
 
-    parser_filter = subparsers.add_parser('filter', help='Delete')
-    parser_filter.add_argument('--category', type=str, help='Expense ID')
+    parser_filter = subparsers.add_parser('filter', help='Filter')
+    parser_filter.add_argument('--category', type=str, help='Show category')
     
     parser_update = subparsers.add_parser('update', help='Update')
     parser_update.add_argument('id', type=str, help='Expense ID')

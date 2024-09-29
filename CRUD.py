@@ -24,7 +24,6 @@ def create_file():
             csv_writer.writerow(BUDGET_COLUMNS)
 
 
-
 def create(description, amount, category):
 
     id = id_auto_increment(CSV_FILE)
